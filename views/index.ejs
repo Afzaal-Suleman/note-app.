@@ -1,0 +1,105 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <!-- Toast Message -->
+        <% if (message) { %>
+            <div class="toast <%= messageType === 'success' ? 'toast-success' : 'toast-error' %>">
+                <%= message %>
+            </div>
+        <% } %>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-info">
+                    <h3>Total Notes</h3>
+                    <p class="stat-number"><%= totalNotes %></p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-info">
+                    <h3>Favorites</h3>
+                    <p class="stat-number"><%= favorites %></p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📌</div>
+                <div class="stat-info">
+                    <h3>Pinned</h3>
+                    <p class="stat-number"><%= pinned %></p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📂</div>
+                <div class="stat-info">
+                    <h3>Categories</h3>
+                    <p class="stat-number"><%= categories.length %></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="/notes" class="btn-primary btn-large">� View All Notes</a>
+            <a href="/notes/create" class="btn-secondary btn-large">➕ Create New Note</a>
+        </div>
+
+        <!-- Recent Notes Preview -->
+        <% if (recentNotes && recentNotes.length > 0) { %>
+            <div class="recent-notes-section">
+                <h2 class="section-title">Recent Notes</h2>
+                <div class="notes-table-container">
+                    <table class="notes-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% recentNotes.slice(0, 5).forEach(note => { %>
+                                <tr class="<%= note.pinned ? 'pinned-row' : '' %> <%= note.favorite ? 'favorite-row' : '' %>">
+                                    <td class="status-cell">
+                                        <% if (note.pinned) { %>
+                                            <span class="status-icon" title="Pinned">📌</span>
+                                        <% } %>
+                                        <% if (note.favorite) { %>
+                                            <span class="status-icon" title="Favorite">⭐</span>
+                                        <% } %>
+                                        <% if (!note.pinned && !note.favorite) { %>
+                                            <span class="status-icon">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="title-cell">
+                                        <a href="/notes/<%= note.id %>" class="note-link"><%= note.title %></a>
+                                    </td>
+                                    <td class="category-cell">
+                                        <span class="category-tag"><%= note.category %></span>
+                                    </td>
+                                    <td class="date-cell">
+                                        <%= note.createdAt %>
+                                    </td>
+                                    <td class="actions-cell">
+                                        <div class="table-actions">
+                                            <a href="/notes/<%= note.id %>" class="btn-view" title="View">👁️</a>
+                                            <a href="/notes/<%= note.id %>/edit" class="btn-edit" title="Edit">✏️</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

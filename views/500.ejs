@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <div class="error-page">
+            <div class="error-icon">⚠️</div>
+            <h1 class="error-title">500 - Server Error</h1>
+            <p class="error-message">Something went wrong on our end. Please try again later.</p>
+            <% if (error) { %>
+                <p class="error-details"><%= error %></p>
+            <% } %>
+            <a href="/" class="btn-primary btn-large">Back to Dashboard</a>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

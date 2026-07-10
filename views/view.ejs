@@ -1,0 +1,75 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <!-- Toast Message -->
+        <% if (message) { %>
+            <div class="toast <%= messageType === 'success' ? 'toast-success' : 'toast-error' %>">
+                <%= message %>
+            </div>
+        <% } %>
+
+        <div class="note-view-container">
+            <div class="note-view-header">
+                <div class="note-meta-badges">
+                    <% if (note.pinned) { %>
+                        <span class="badge badge-pinned">📌 Pinned</span>
+                    <% } %>
+                    <% if (note.favorite) { %>
+                        <span class="badge badge-favorite">⭐ Favorite</span>
+                    <% } %>
+                    <span class="badge badge-category"><%= note.category %></span>
+                </div>
+                
+                <div class="note-actions-header">
+                    <form action="/notes/<%= note.id %>/favorite" method="POST">
+                        <button type="submit" class="btn-action <%= note.favorite ? 'btn-favorite-active' : '' %>">
+                            <%= note.favorite ? '⭐ Remove Favorite' : '⭐ Add to Favorites' %>
+                        </button>
+                    </form>
+                    
+                    <form action="/notes/<%= note.id %>/pin" method="POST">
+                        <button type="submit" class="btn-action <%= note.pinned ? 'btn-pinned-active' : '' %>">
+                            <%= note.pinned ? '📌 Unpin' : '📌 Pin Note' %>
+                        </button>
+                    </form>
+                    
+                    <a href="/notes/<%= note.id %>/edit" class="btn-action btn-edit">✏️ Edit</a>
+                    
+                    <form action="/notes/<%= note.id %>/delete" method="POST" onsubmit="return confirmDelete()">
+                        <button type="submit" class="btn-action btn-delete">🗑️ Delete</button>
+                    </form>
+                </div>
+            </div>
+
+            <h1 class="note-view-title"><%= note.title %></h1>
+
+            <div class="note-view-info">
+                <span class="info-item">📅 Created: <%= note.createdAt %></span>
+                <span class="info-item">🔄 Updated: <%= note.updatedAt %></span>
+            </div>
+
+            <div class="note-view-content">
+                <%= note.content.replace(/\n/g, '<br>') %>
+            </div>
+
+            <% if (note.tags && note.tags.length > 0) { %>
+                <div class="note-view-tags">
+                    <h3>Tags</h3>
+                    <div class="tags-container">
+                        <% note.tags.forEach(tag => { %>
+                            <span class="tag">#<%= tag %></span>
+                        <% }); %>
+                    </div>
+                </div>
+            <% } %>
+
+            <div class="note-view-footer">
+                <a href="/" class="btn-secondary">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('partials/footer') %>

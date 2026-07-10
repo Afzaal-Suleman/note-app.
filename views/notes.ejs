@@ -1,0 +1,271 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<main class="main-content">
+    <div class="container">
+        <!-- Toast Message -->
+        <% if (message) { %>
+            <div class="toast <%= messageType === 'success' ? 'toast-success' : 'toast-error' %>">
+                <%= message %>
+            </div>
+        <% } %>
+
+        <!-- Notes Section -->
+        <div class="notes-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <%= notes.length %> Notes
+                    <% if (currentSearch) { %>
+                        <span class="search-term">for "<%= currentSearch %>"</span>
+                    <% } %>
+                    <% if (currentCategory) { %>
+                        <span class="search-term">in <%= currentCategory %></span>
+                    <% } %>
+                </h2>
+                <button class="table-filter-toggle" id="tableFilterToggle">
+                    🔍 Filter
+                </button>
+            </div>
+
+            <% if (notes.length === 0) { %>
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <h3>No notes found</h3>
+                    <p>Create your first note to get started!</p>
+                    <a href="/notes/create" class="btn-primary">Create Note</a>
+                </div>
+            <% } else { %>
+                <div class="notes-table-container">
+                    <!-- Table Filter Dropdown -->
+                    <div class="table-filter-dropdown" id="tableFilterDropdown">
+                        <form action="/notes" method="GET" class="table-filter-search" onsubmit="return submitSearchForm(event)">
+                            <input 
+                                type="text" 
+                                name="search" 
+                                placeholder="Search notes..." 
+                                value="<%= currentSearch %>"
+                                class="search-input"
+                                id="searchInput"
+                            >
+                            <button type="submit" class="btn-search">🔍</button>
+                        </form>
+
+                        <div class="table-filter-controls">
+                            <form action="/notes" method="GET" class="filter-form" id="filterForm">
+                                <input type="hidden" name="search" value="<%= currentSearch %>">
+                                
+                                <select name="category" class="filter-select" id="categorySelect">
+                                    <option value="">All Categories</option>
+                                    <% allCategories.forEach(cat => { %>
+                                        <option value="<%= cat %>" <%= currentCategory === cat ? 'selected' : '' %>>
+                                            <%= cat %>
+                                        </option>
+                                    <% }); %>
+                                </select>
+
+                                <select name="sort" class="filter-select" id="sortSelect">
+                                    <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>Newest</option>
+                                    <option value="oldest" <%= currentSort === 'oldest' ? 'selected' : '' %>>Oldest</option>
+                                    <option value="a-z" <%= currentSort === 'a-z' ? 'selected' : '' %>>A-Z</option>
+                                    <option value="z-a" <%= currentSort === 'z-a' ? 'selected' : '' %>>Z-A</option>
+                                    <option value="favorites" <%= currentSort === 'favorites' ? 'selected' : '' %>>Favorites</option>
+                                    <option value="pinned" <%= currentSort === 'pinned' ? 'selected' : '' %>>Pinned</option>
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <table class="notes-table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Tags</th>
+                                <th>Content</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% notes.forEach(note => { %>
+                                <tr class="<%= note.pinned ? 'pinned-row' : '' %> <%= note.favorite ? 'favorite-row' : '' %>">
+                                    <td class="status-cell" data-label="Status">
+                                        <% if (note.pinned) { %>
+                                            <span class="status-icon" title="Pinned">📌</span>
+                                        <% } %>
+                                        <% if (note.favorite) { %>
+                                            <span class="status-icon" title="Favorite">⭐</span>
+                                        <% } %>
+                                        <% if (!note.pinned && !note.favorite) { %>
+                                            <span class="status-icon">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="title-cell" data-label="Title">
+                                        <a href="/notes/<%= note.id %>" class="note-link"><%= note.title %></a>
+                                    </td>
+                                    <td class="category-cell" data-label="Category">
+                                        <span class="category-tag"><%= note.category %></span>
+                                    </td>
+                                    <td class="tags-cell" data-label="Tags">
+                                        <% if (note.tags && note.tags.length > 0) { %>
+                                            <% note.tags.forEach(tag => { %>
+                                                <span class="tag">#<%= tag %></span>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <span class="no-tags">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="content-cell" data-label="Content">
+                                        <%= note.content.substring(0, 80) %><%= note.content.length > 80 ? '...' : '' %>
+                                    </td>
+                                    <td class="date-cell" data-label="Created">
+                                        <%= note.createdAt %>
+                                    </td>
+                                    <td class="actions-cell" data-label="Actions">
+                                        <div class="action-dropdown">
+                                            <button class="dropdown-toggle" data-note-id="<%= note.id %>">
+                                                ⋮
+                                            </button>
+                                            <div class="dropdown-menu" id="dropdown-<%= note.id %>">
+                                                <a href="/notes/<%= note.id %>" class="dropdown-item">👁️ View</a>
+                                                <a href="/notes/<%= note.id %>/edit" class="dropdown-item">✏️ Edit</a>
+                                                <form action="/notes/<%= note.id %>/delete" method="POST" class="dropdown-form" onsubmit="return confirmDelete()">
+                                                    <button type="submit" class="dropdown-item dropdown-item-danger">🗑️ Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<script>
+// Table filter toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const tableFilterToggle = document.getElementById('tableFilterToggle');
+    const tableFilterDropdown = document.getElementById('tableFilterDropdown');
+    
+    if (tableFilterToggle && tableFilterDropdown) {
+        tableFilterToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            tableFilterDropdown.classList.toggle('show');
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (tableFilterDropdown && !tableFilterDropdown.contains(e.target) && e.target !== tableFilterToggle) {
+            tableFilterDropdown.classList.remove('show');
+        }
+    });
+});
+
+// Dropdown toggle using event delegation
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.dropdown-toggle').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const noteId = button.getAttribute('data-note-id');
+            const dropdown = document.getElementById('dropdown-' + noteId);
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('show');
+                }
+            });
+            
+            // Move dropdown to body if not already moved
+            if (dropdown.parentElement !== document.body) {
+                document.body.appendChild(dropdown);
+            }
+            
+            // Calculate position for popup
+            const rect = button.getBoundingClientRect();
+            dropdown.style.position = 'fixed';
+            dropdown.style.top = (rect.bottom + 2) + 'px';
+            dropdown.style.left = (rect.right - 150) + 'px';
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('show');
+        });
+    });
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.action-dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+    }
+});
+
+function submitSearchForm(event) {
+    event.preventDefault();
+    const form = event.target;
+    const searchValue = form.querySelector('input[name="search"]').value.trim();
+    
+    if (searchValue) {
+        window.location.href = '/notes?search=' + encodeURIComponent(searchValue);
+    } else {
+        window.location.href = '/notes';
+    }
+    
+    return false;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const categorySelect = document.getElementById('categorySelect');
+    const sortSelect = document.getElementById('sortSelect');
+    
+    // Store initial values
+    const initialCategory = categorySelect ? categorySelect.value : '';
+    const initialSort = sortSelect ? sortSelect.value : 'newest';
+    
+    // Add change event listeners
+    if (categorySelect) {
+        categorySelect.addEventListener('change', () => {
+            if (categorySelect.value !== initialCategory) {
+                submitFilterForm();
+            }
+        });
+    }
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            if (sortSelect.value !== initialSort) {
+                submitFilterForm();
+            }
+        });
+    }
+});
+
+function submitFilterForm() {
+    const form = document.getElementById('filterForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+    
+    for (const [key, value] of formData.entries()) {
+        if (value && value.trim() !== '') {
+            // Skip default sort value (newest)
+            if (key === 'sort' && value === 'newest') {
+                continue;
+            }
+            params.append(key, value);
+        }
+    }
+    
+    const queryString = params.toString();
+    window.location.href = queryString ? '/notes?' + queryString : '/notes';
+}
+</script>
+
+<%- include('partials/footer') %>
