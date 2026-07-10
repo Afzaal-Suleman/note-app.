@@ -189,7 +189,7 @@ const getNotesList = (req, res) => {
 // Controller: Show create note form
 const showCreateForm = (req, res) => {
     try {
-        const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview'];
+        const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview', 'System design'];
         res.render('create', {
             title: 'Create Note',
             categories,
