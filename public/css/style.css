@@ -544,8 +544,8 @@ html:not(.dark-mode) .moon-icon {
 .content-cell {
     width: 300px;
     color: var(--text-secondary);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: 0.65rem;
+    line-height: 1.4;
 }
 
 .date-cell {
