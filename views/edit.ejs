@@ -6,6 +6,16 @@
         <div class="form-container">
             <h1 class="page-title">Edit Note</h1>
             
+            <div class="note-meta-badges" style="margin-bottom: 1.5rem;">
+                <span class="badge badge-category"><%= note.category %></span>
+                <% if (note.pinned) { %>
+                    <span class="badge badge-pinned">📌 Pinned</span>
+                <% } %>
+                <% if (note.favorite) { %>
+                    <span class="badge badge-favorite">⭐ Favorite</span>
+                <% } %>
+            </div>
+            
             <% if (errors && errors.length > 0) { %>
                 <div class="error-messages">
                     <% errors.forEach(error => { %>

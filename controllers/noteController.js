@@ -1,5 +1,17 @@
 const Note = require('../models/Note');
 
+// Helper: Get all unique categories from database
+const getAllCategories = async () => {
+    try {
+        const notes = await Note.find({}, 'category');
+        const categories = [...new Set(notes.map(note => note.category))];
+        return categories.sort(); // Sort alphabetically
+    } catch (error) {
+        console.error('Error getting categories:', error);
+        return ['General'];
+    }
+};
+
 // Helper: Get current date in YYYY-MM-DD format
 const getCurrentDate = () => {
     const now = new Date();
@@ -174,9 +186,9 @@ const getNotesList = async (req, res) => {
 };
 
 // Controller: Show create note form
-const showCreateForm = (req, res) => {
+const showCreateForm = async (req, res) => {
     try {
-        const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview', 'System design'];
+        const categories = await getAllCategories();
         res.render('create', {
             title: 'Create Note',
             categories,
@@ -201,7 +213,7 @@ const createNote = async (req, res) => {
         const errors = validateNote(noteData);
 
         if (errors.length > 0) {
-            const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview'];
+            const categories = await getAllCategories();
             return res.render('create', {
                 title: 'Create Note',
                 categories,
@@ -248,7 +260,7 @@ const showEditForm = async (req, res) => {
             return res.status(404).render('404', { title: '404 - Note Not Found' });
         }
 
-        const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview'];
+        const categories = await getAllCategories();
 
         res.render('edit', {
             title: 'Edit Note',
@@ -286,7 +298,7 @@ const updateNote = async (req, res) => {
         const errors = validateNote(updatedNoteData);
 
         if (errors.length > 0) {
-            const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview'];
+            const categories = await getAllCategories();
             return res.render('edit', {
                 title: 'Edit Note',
                 note: { ...note.toObject(), ...updatedNoteData },
