@@ -6,7 +6,14 @@
             <div class="nav-menu">
                 <a href="/" class="nav-link">Dashboard</a>
                 <a href="/notes" class="nav-link">Notes</a>
-                <a href="/notes/create" class="nav-link btn-primary">Create Note</a>
+                <% if (req.session && req.session.isAuthenticated) { %>
+                    <a href="/notes/create" class="nav-link btn-primary">Create Note</a>
+                    <form action="/logout" method="POST" style="display: inline;">
+                        <button type="submit" class="nav-link btn-secondary">Logout</button>
+                    </form>
+                <% } else { %>
+                    <a href="/login" class="nav-link btn-primary">Login</a>
+                <% } %>
                 <button class="dark-mode-toggle" id="darkModeToggle">
                     <span class="sun-icon">☀️</span>
                     <span class="moon-icon">🌙</span>

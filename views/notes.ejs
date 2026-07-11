@@ -117,24 +117,28 @@
                                         <% } %>
                                     </td>
                                     <td class="content-cell" data-label="Content">
-                                        <%= note.content.substring(0, 80) %><%= note.content.length > 80 ? '...' : '' %>
+                                        <%- note.content.substring(0, 80) %><%= note.content.length > 80 ? '...' : '' %>
                                     </td>
                                     <td class="date-cell" data-label="Created">
                                         <%= note.createdAt %>
                                     </td>
                                     <td class="actions-cell" data-label="Actions">
-                                        <div class="action-dropdown">
-                                            <button class="dropdown-toggle" data-note-id="<%= note._id %>">
-                                                ⋮
-                                            </button>
-                                            <div class="dropdown-menu" id="dropdown-<%= note._id %>">
-                                                <a href="/notes/<%= note._id %>" class="dropdown-item">👁️ View</a>
-                                                <a href="/notes/<%= note._id %>/edit" class="dropdown-item">✏️ Edit</a>
-                                                <form action="/notes/<%= note._id %>/delete" method="POST" class="dropdown-form" onsubmit="return confirmDelete()">
-                                                    <button type="submit" class="dropdown-item dropdown-item-danger">🗑️ Delete</button>
-                                                </form>
+                                        <% if (req.session && req.session.isAuthenticated) { %>
+                                            <div class="action-dropdown">
+                                                <button class="dropdown-toggle" data-note-id="<%= note._id %>">
+                                                    ⋮
+                                                </button>
+                                                <div class="dropdown-menu" id="dropdown-<%= note._id %>">
+                                                    <a href="/notes/<%= note._id %>" class="dropdown-item">👁️ View</a>
+                                                    <a href="/notes/<%= note._id %>/edit" class="dropdown-item">✏️ Edit</a>
+                                                    <form action="/notes/<%= note._id %>/delete" method="POST" class="dropdown-form" onsubmit="return confirmDelete()">
+                                                        <button type="submit" class="dropdown-item dropdown-item-danger">🗑️ Delete</button>
+                                                    </form>
+                                                </div>
                                             </div>
-                                        </div>
+                                        <% } else { %>
+                                            <a href="/notes/<%= note._id %>" class="btn-view" title="View">👁️</a>
+                                        <% } %>
                                     </td>
                                 </tr>
                             <% }); %>
