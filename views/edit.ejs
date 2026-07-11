@@ -45,14 +45,25 @@
 
                 <div class="form-group">
                     <label for="category">Category</label>
-                    <select id="category" name="category" class="form-select">
-                        <option value="">Select a category</option>
-                        <% categories.forEach(cat => { %>
-                            <option value="<%= cat %>" <%= note.category === cat ? 'selected' : '' %>>
-                                <%= cat %>
-                            </option>
-                        <% }); %>
-                    </select>
+                    <div class="category-input-wrapper">
+                        <select id="category" name="category" class="form-select">
+                            <option value="">Select a category</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat %>" <%= note.category === cat ? 'selected' : '' %>>
+                                    <%= cat %>
+                                </option>
+                            <% }); %>
+                        </select>
+                        <span class="category-divider">or</span>
+                        <input 
+                            type="text" 
+                            id="newCategory" 
+                            name="newCategory" 
+                            class="form-input"
+                            placeholder="Enter new category..."
+                            maxlength="50"
+                        >
+                    </div>
                 </div>
 
                 <div class="form-group">

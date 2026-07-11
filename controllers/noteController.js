@@ -39,15 +39,26 @@ const parseTags = (tags) => {
 };
 
 // Helper: Build note payload from request body
-const buildNotePayload = (body) => ({
-    title: body.title ? body.title.trim() : '',
-    heading: body.heading ? body.heading.trim() : '',
-    content: body.content ? body.content.trim() : '',
-    category: body.category || 'General',
-    tags: parseTags(body.tags),
-    favorite: body.favorite === 'on' || body.favorite === true,
-    pinned: body.pinned === 'on' || body.pinned === true
-});
+const buildNotePayload = (body) => {
+    // Allow custom category or use selected category
+    let category = 'General';
+    
+    if (body.newCategory && body.newCategory.trim()) {
+        category = body.newCategory.trim();
+    } else if (body.category && body.category.trim()) {
+        category = body.category.trim();
+    }
+    
+    return {
+        title: body.title ? body.title.trim() : '',
+        heading: body.heading ? body.heading.trim() : '',
+        content: body.content ? body.content.trim() : '',
+        category: category,
+        tags: parseTags(body.tags),
+        favorite: body.favorite === 'on' || body.favorite === true,
+        pinned: body.pinned === 'on' || body.pinned === true
+    };
+};
 
 // Helper: Filter notes by search query
 const filterNotes = (notes, searchQuery) => {

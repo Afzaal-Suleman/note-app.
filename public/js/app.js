@@ -387,3 +387,25 @@ window.addEventListener('afterprint', () => {
 console.log('%c📝 Notes App', 'font-size: 24px; font-weight: bold; color: #6366f1;');
 console.log('%cBuilt with Node.js, Express, and EJS', 'font-size: 14px; color: #8b5cf6;');
 console.log('%cPress Ctrl/Cmd + K to focus search', 'font-size: 12px; color: #94a3b8;');
+
+// ============================================
+// Dynamic Category Input
+// ============================================
+const categorySelect = document.getElementById('category');
+const newCategoryInput = document.getElementById('newCategory');
+
+if (categorySelect && newCategoryInput) {
+    // When user selects a category from dropdown
+    categorySelect.addEventListener('change', () => {
+        if (categorySelect.value) {
+            newCategoryInput.value = ''; // Clear custom category input
+        }
+    });
+    
+    // When user types in custom category input
+    newCategoryInput.addEventListener('input', () => {
+        if (newCategoryInput.value.trim()) {
+            categorySelect.value = ''; // Clear dropdown selection
+        }
+    });
+}
