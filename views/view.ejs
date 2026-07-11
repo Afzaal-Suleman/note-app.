@@ -51,7 +51,7 @@
             </div>
 
             <div class="note-view-content">
-                <%= note.content.replace(/\n/g, '<br>') %>
+                <%- (note.content || '') %>
             </div>
 
             <% if (note.tags && note.tags.length > 0) { %>

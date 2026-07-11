@@ -7,6 +7,11 @@ const noteSchema = new mongoose.Schema({
     trim: true,
     maxlength: 150
   },
+  heading: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   content: {
     type: String,
     required: true,

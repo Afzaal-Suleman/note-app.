@@ -947,7 +947,7 @@ body:not(.dark-mode) .moon-icon {
 
 .note-view-title {
     font-size: 2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
 
@@ -969,7 +969,78 @@ body:not(.dark-mode) .moon-icon {
     line-height: 1.8;
     color: var(--text-primary);
     margin-bottom: 2rem;
-    white-space: pre-wrap;
+}
+
+.note-view-content p {
+    margin-bottom: 0.75rem;
+}
+
+.note-view-content ul,
+.note-view-content ol {
+    padding-left: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.content-editor {
+    min-height: 220px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.ql-toolbar {
+    border: none !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background: var(--bg-secondary);
+}
+
+.ql-toolbar button,
+.ql-toolbar .ql-picker,
+.ql-toolbar .ql-picker-label,
+.ql-toolbar .ql-picker-options {
+    color: var(--text-primary) !important;
+}
+
+.ql-toolbar button:hover,
+.ql-toolbar button:focus,
+.ql-toolbar .ql-picker:hover,
+.ql-toolbar .ql-picker-label:hover {
+    color: white !important;
+    background: var(--primary-color) !important;
+}
+
+.ql-container {
+    border: none !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.ql-editor.ql-blank::before {
+    color: var(--text-secondary) !important;
+}
+
+body.dark-mode .ql-toolbar,
+body.dark-mode .ql-container,
+body.dark-mode .content-editor {
+    background: #1e293b;
+    color: white;
+}
+
+body.dark-mode .ql-toolbar button,
+body.dark-mode .ql-toolbar .ql-picker,
+body.dark-mode .ql-toolbar .ql-picker-label,
+body.dark-mode .ql-toolbar .ql-picker-options,
+body.dark-mode .ql-editor.ql-blank::before {
+    color: white !important;
+}
+
+body.dark-mode .ql-toolbar button:hover,
+body.dark-mode .ql-toolbar button:focus {
+    color: white !important;
+    background: var(--primary-color) !important;
 }
 
 .note-view-tags {

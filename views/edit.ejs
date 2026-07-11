@@ -32,13 +32,14 @@
 
                 <div class="form-group">
                     <label for="content">Content *</label>
+                    <div class="content-editor"></div>
                     <textarea 
                         id="content" 
                         name="content" 
                         rows="8"
                         required
                         class="form-textarea"
-                        placeholder="Write your note content here..."
+                        style="display: none;"
                     ><%= note.content %></textarea>
                 </div>
 

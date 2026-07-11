@@ -41,6 +41,7 @@ const parseTags = (tags) => {
 // Helper: Build note payload from request body
 const buildNotePayload = (body) => ({
     title: body.title ? body.title.trim() : '',
+    heading: body.heading ? body.heading.trim() : '',
     content: body.content ? body.content.trim() : '',
     category: body.category || 'General',
     tags: parseTags(body.tags),
@@ -262,6 +263,7 @@ const updateNote = async (req, res) => {
         const payload = buildNotePayload(req.body);
         const updatedNoteData = {
             title: payload.title,
+            heading: payload.heading,
             content: payload.content,
             category: payload.category,
             tags: payload.tags,
