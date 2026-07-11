@@ -1,43 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-
-// Path to notes.json file
-const notesFilePath = path.join(__dirname, '../data/notes.json');
-
-// Helper: Read notes from JSON file
-const readNotes = () => {
-    try {
-        const data = fs.readFileSync(notesFilePath, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error('Error reading notes file:', error);
-        return [];
-    }
-};
-
-// Helper: Write notes to JSON file
-const writeNotes = (notes) => {
-    try {
-        fs.writeFileSync(notesFilePath, JSON.stringify(notes, null, 2), 'utf8');
-        return true;
-    } catch (error) {
-        console.error('Error writing notes file:', error);
-        return false;
-    }
-};
-
-// Helper: Find note by ID
-const findNote = (id) => {
-    const notes = readNotes();
-    return notes.find(note => note.id === parseInt(id));
-};
-
-// Helper: Generate unique ID
-const generateId = () => {
-    const notes = readNotes();
-    if (notes.length === 0) return 1;
-    return Math.max(...notes.map(note => note.id)) + 1;
-};
+const Note = require('../models/Note');
 
 // Helper: Get current date in YYYY-MM-DD format
 const getCurrentDate = () => {
@@ -46,34 +7,57 @@ const getCurrentDate = () => {
 };
 
 // Helper: Validate note data
-const validateNote = (note, isUpdate = false) => {
+const validateNote = (note) => {
     const errors = [];
-    
+
     if (!note.title || note.title.trim() === '') {
         errors.push('Title is required');
     }
-    
+
     if (note.title && note.title.length > 150) {
         errors.push('Title must not exceed 150 characters');
     }
-    
+
     if (!note.content || note.content.trim() === '') {
         errors.push('Content is required');
     }
-    
+
     return errors;
 };
+
+// Helper: Parse tags from form input
+const parseTags = (tags) => {
+    if (Array.isArray(tags)) {
+        return tags.map(tag => tag.trim()).filter(tag => tag !== '');
+    }
+
+    if (typeof tags === 'string') {
+        return tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    }
+
+    return [];
+};
+
+// Helper: Build note payload from request body
+const buildNotePayload = (body) => ({
+    title: body.title ? body.title.trim() : '',
+    content: body.content ? body.content.trim() : '',
+    category: body.category || 'General',
+    tags: parseTags(body.tags),
+    favorite: body.favorite === 'on' || body.favorite === true,
+    pinned: body.pinned === 'on' || body.pinned === true
+});
 
 // Helper: Filter notes by search query
 const filterNotes = (notes, searchQuery) => {
     if (!searchQuery) return notes;
-    
+
     const query = searchQuery.toLowerCase();
-    return notes.filter(note => 
+    return notes.filter(note =>
         note.title.toLowerCase().includes(query) ||
         note.content.toLowerCase().includes(query) ||
         note.category.toLowerCase().includes(query) ||
-        note.tags.some(tag => tag.toLowerCase().includes(query))
+        (note.tags || []).some(tag => tag.toLowerCase().includes(query))
     );
 };
 
@@ -86,7 +70,7 @@ const filterByCategory = (notes, category) => {
 // Helper: Sort notes
 const sortNotes = (notes, sortBy) => {
     const sortedNotes = [...notes];
-    
+
     switch (sortBy) {
         case 'newest':
             return sortedNotes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -113,19 +97,16 @@ const separatePinned = (notes) => {
 };
 
 // Controller: Display all notes (Dashboard)
-const getAllNotes = (req, res) => {
+const getAllNotes = async (req, res) => {
     try {
-        const allNotesList = readNotes();
-        
-        // Calculate dashboard statistics
+        const allNotesList = await Note.find({}).sort({ createdAt: -1 });
+
         const totalNotes = allNotesList.length;
         const favorites = allNotesList.filter(note => note.favorite).length;
         const pinned = allNotesList.filter(note => note.pinned).length;
         const categories = [...new Set(allNotesList.map(note => note.category))];
-        
-        // Get recent notes (sorted by newest, max 5)
         const recentNotes = sortNotes([...allNotesList], 'newest').slice(0, 5);
-        
+
         res.render('index', {
             title: 'Dashboard',
             totalNotes,
@@ -143,39 +124,33 @@ const getAllNotes = (req, res) => {
 };
 
 // Controller: Display notes list page
-const getNotesList = (req, res) => {
+const getNotesList = async (req, res) => {
     try {
-        let notes = readNotes();
-        
-        // Get query parameters
-        const search = req.query.search;
-        const category = req.query.category;
+        const search = req.query.search || '';
+        const category = req.query.category || '';
         const sort = req.query.sort || 'newest';
-        
-        // Apply filters
+
+        let notes = await Note.find({});
+
         if (search) {
             notes = filterNotes(notes, search);
         }
-        
+
         if (category) {
             notes = filterByCategory(notes, category);
         }
-        
-        // Apply sorting
+
         notes = sortNotes(notes, sort);
-        
-        // Separate pinned notes (pinned always appear first)
         notes = separatePinned(notes);
-        
-        // Get all unique categories for filter dropdown
-        const allCategories = [...new Set(readNotes().map(note => note.category))];
-        
+
+        const allCategories = [...new Set((await Note.find({}, 'category')).map(note => note.category))];
+
         res.render('notes', {
             title: 'All Notes',
             notes,
             allCategories,
-            currentSearch: search || '',
-            currentCategory: category || '',
+            currentSearch: search,
+            currentCategory: category,
             currentSort: sort,
             message: req.query.message,
             messageType: req.query.messageType
@@ -203,26 +178,16 @@ const showCreateForm = (req, res) => {
 };
 
 // Controller: Create new note
-const createNote = (req, res) => {
+const createNote = async (req, res) => {
     try {
-        const { title, content, category, tags, favorite, pinned } = req.body;
-        
-        // Create note object
-        const note = {
-            id: generateId(),
-            title: title.trim(),
-            content: content.trim(),
-            category: category || 'General',
-            tags: tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '') : [],
-            favorite: favorite === 'on',
-            pinned: pinned === 'on',
+        const noteData = {
+            ...buildNotePayload(req.body),
             createdAt: getCurrentDate(),
             updatedAt: getCurrentDate()
         };
-        
-        // Validate note
-        const errors = validateNote(note);
-        
+
+        const errors = validateNote(noteData);
+
         if (errors.length > 0) {
             const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview'];
             return res.render('create', {
@@ -232,13 +197,8 @@ const createNote = (req, res) => {
                 formData: req.body
             });
         }
-        
-        // Save note
-        const notes = readNotes();
-        notes.push(note);
-        writeNotes(notes);
-        
-        // Redirect with success message
+
+        await Note.create(noteData);
         res.redirect('/notes?message=Note created successfully&messageType=success');
     } catch (error) {
         console.error('Error creating note:', error);
@@ -247,14 +207,14 @@ const createNote = (req, res) => {
 };
 
 // Controller: View single note
-const viewNote = (req, res) => {
+const viewNote = async (req, res) => {
     try {
-        const note = findNote(req.params.id);
-        
+        const note = await Note.findById(req.params.id);
+
         if (!note) {
             return res.status(404).render('404', { title: '404 - Note Not Found' });
         }
-        
+
         res.render('view', {
             title: note.title,
             note,
@@ -268,16 +228,16 @@ const viewNote = (req, res) => {
 };
 
 // Controller: Show edit form
-const showEditForm = (req, res) => {
+const showEditForm = async (req, res) => {
     try {
-        const note = findNote(req.params.id);
-        
+        const note = await Note.findById(req.params.id);
+
         if (!note) {
             return res.status(404).render('404', { title: '404 - Note Not Found' });
         }
-        
+
         const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview'];
-        
+
         res.render('edit', {
             title: 'Edit Note',
             note,
@@ -291,50 +251,41 @@ const showEditForm = (req, res) => {
 };
 
 // Controller: Update note
-const updateNote = (req, res) => {
+const updateNote = async (req, res) => {
     try {
-        const { title, content, category, tags, favorite, pinned } = req.body;
-        const noteId = parseInt(req.params.id);
-        
-        // Find existing note
-        const notes = readNotes();
-        const noteIndex = notes.findIndex(note => note.id === noteId);
-        
-        if (noteIndex === -1) {
+        const note = await Note.findById(req.params.id);
+
+        if (!note) {
             return res.status(404).render('404', { title: '404 - Note Not Found' });
         }
-        
-        // Create updated note object
-        const updatedNote = {
-            ...notes[noteIndex],
-            title: title.trim(),
-            content: content.trim(),
-            category: category || 'General',
-            tags: tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '') : [],
-            favorite: favorite === 'on',
-            pinned: pinned === 'on',
+
+        const payload = buildNotePayload(req.body);
+        const updatedNoteData = {
+            title: payload.title,
+            content: payload.content,
+            category: payload.category,
+            tags: payload.tags,
+            favorite: payload.favorite,
+            pinned: payload.pinned,
             updatedAt: getCurrentDate()
         };
-        
-        // Validate note
-        const errors = validateNote(updatedNote, true);
-        
+
+        const errors = validateNote(updatedNoteData);
+
         if (errors.length > 0) {
             const categories = ['Programming', 'Node.js', 'Express', 'JavaScript', 'Laravel', 'React', 'English', 'Personal', 'Interview'];
             return res.render('edit', {
                 title: 'Edit Note',
-                note: { ...updatedNote, id: noteId },
+                note: { ...note.toObject(), ...updatedNoteData },
                 categories,
                 errors
             });
         }
-        
-        // Update note
-        notes[noteIndex] = updatedNote;
-        writeNotes(notes);
-        
-        // Redirect with success message
-        res.redirect(`/notes/${noteId}?message=Note updated successfully&messageType=success`);
+
+        Object.assign(note, updatedNoteData);
+        await note.save();
+
+        res.redirect(`/notes/${note.id}?message=Note updated successfully&messageType=success`);
     } catch (error) {
         console.error('Error updating note:', error);
         res.status(500).render('500', { title: '500 - Server Error', error: error.message });
@@ -342,21 +293,15 @@ const updateNote = (req, res) => {
 };
 
 // Controller: Delete note
-const deleteNote = (req, res) => {
+const deleteNote = async (req, res) => {
     try {
-        const noteId = parseInt(req.params.id);
-        const notes = readNotes();
-        const noteIndex = notes.findIndex(note => note.id === noteId);
-        
-        if (noteIndex === -1) {
+        const note = await Note.findById(req.params.id);
+
+        if (!note) {
             return res.status(404).render('404', { title: '404 - Note Not Found' });
         }
-        
-        // Remove note
-        notes.splice(noteIndex, 1);
-        writeNotes(notes);
-        
-        // Redirect with success message
+
+        await note.deleteOne();
         res.redirect('/?message=Note deleted successfully&messageType=success');
     } catch (error) {
         console.error('Error deleting note:', error);
@@ -365,24 +310,20 @@ const deleteNote = (req, res) => {
 };
 
 // Controller: Toggle favorite
-const toggleFavorite = (req, res) => {
+const toggleFavorite = async (req, res) => {
     try {
-        const noteId = parseInt(req.params.id);
-        const notes = readNotes();
-        const noteIndex = notes.findIndex(note => note.id === noteId);
-        
-        if (noteIndex === -1) {
+        const note = await Note.findById(req.params.id);
+
+        if (!note) {
             return res.status(404).render('404', { title: '404 - Note Not Found' });
         }
-        
-        // Toggle favorite
-        notes[noteIndex].favorite = !notes[noteIndex].favorite;
-        notes[noteIndex].updatedAt = getCurrentDate();
-        writeNotes(notes);
-        
-        // Redirect back with message
-        const message = notes[noteIndex].favorite ? 'Note added to favorites' : 'Note removed from favorites';
-        res.redirect(`/notes/${noteId}?message=${message}&messageType=success`);
+
+        note.favorite = !note.favorite;
+        note.updatedAt = getCurrentDate();
+        await note.save();
+
+        const message = note.favorite ? 'Note added to favorites' : 'Note removed from favorites';
+        res.redirect(`/notes/${note.id}?message=${message}&messageType=success`);
     } catch (error) {
         console.error('Error toggling favorite:', error);
         res.status(500).render('500', { title: '500 - Server Error', error: error.message });
@@ -390,24 +331,20 @@ const toggleFavorite = (req, res) => {
 };
 
 // Controller: Toggle pin
-const togglePin = (req, res) => {
+const togglePin = async (req, res) => {
     try {
-        const noteId = parseInt(req.params.id);
-        const notes = readNotes();
-        const noteIndex = notes.findIndex(note => note.id === noteId);
-        
-        if (noteIndex === -1) {
+        const note = await Note.findById(req.params.id);
+
+        if (!note) {
             return res.status(404).render('404', { title: '404 - Note Not Found' });
         }
-        
-        // Toggle pin
-        notes[noteIndex].pinned = !notes[noteIndex].pinned;
-        notes[noteIndex].updatedAt = getCurrentDate();
-        writeNotes(notes);
-        
-        // Redirect back with message
-        const message = notes[noteIndex].pinned ? 'Note pinned' : 'Note unpinned';
-        res.redirect(`/notes/${noteId}?message=${message}&messageType=success`);
+
+        note.pinned = !note.pinned;
+        note.updatedAt = getCurrentDate();
+        await note.save();
+
+        const message = note.pinned ? 'Note pinned' : 'Note unpinned';
+        res.redirect(`/notes/${note.id}?message=${message}&messageType=success`);
     } catch (error) {
         console.error('Error toggling pin:', error);
         res.status(500).render('500', { title: '500 - Server Error', error: error.message });

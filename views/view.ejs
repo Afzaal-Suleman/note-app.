@@ -23,21 +23,21 @@
                 </div>
                 
                 <div class="note-actions-header">
-                    <form action="/notes/<%= note.id %>/favorite" method="POST">
+                    <form action="/notes/<%= note._id %>/favorite" method="POST">
                         <button type="submit" class="btn-action <%= note.favorite ? 'btn-favorite-active' : '' %>">
                             <%= note.favorite ? '⭐ Remove Favorite' : '⭐ Add to Favorites' %>
                         </button>
                     </form>
                     
-                    <form action="/notes/<%= note.id %>/pin" method="POST">
+                    <form action="/notes/<%= note._id %>/pin" method="POST">
                         <button type="submit" class="btn-action <%= note.pinned ? 'btn-pinned-active' : '' %>">
                             <%= note.pinned ? '📌 Unpin' : '📌 Pin Note' %>
                         </button>
                     </form>
                     
-                    <a href="/notes/<%= note.id %>/edit" class="btn-action btn-edit">✏️ Edit</a>
+                    <a href="/notes/<%= note._id %>/edit" class="btn-action btn-edit">✏️ Edit</a>
                     
-                    <form action="/notes/<%= note.id %>/delete" method="POST" onsubmit="return confirmDelete()">
+                    <form action="/notes/<%= note._id %>/delete" method="POST" onsubmit="return confirmDelete()">
                         <button type="submit" class="btn-action btn-delete">🗑️ Delete</button>
                     </form>
                 </div>

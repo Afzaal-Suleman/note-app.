@@ -102,7 +102,7 @@
                                         <% } %>
                                     </td>
                                     <td class="title-cell" data-label="Title">
-                                        <a href="/notes/<%= note.id %>" class="note-link"><%= note.title %></a>
+                                        <a href="/notes/<%= note._id %>" class="note-link"><%= note.title %></a>
                                     </td>
                                     <td class="category-cell" data-label="Category">
                                         <span class="category-tag"><%= note.category %></span>
@@ -124,13 +124,13 @@
                                     </td>
                                     <td class="actions-cell" data-label="Actions">
                                         <div class="action-dropdown">
-                                            <button class="dropdown-toggle" data-note-id="<%= note.id %>">
+                                            <button class="dropdown-toggle" data-note-id="<%= note._id %>">
                                                 ⋮
                                             </button>
-                                            <div class="dropdown-menu" id="dropdown-<%= note.id %>">
-                                                <a href="/notes/<%= note.id %>" class="dropdown-item">👁️ View</a>
-                                                <a href="/notes/<%= note.id %>/edit" class="dropdown-item">✏️ Edit</a>
-                                                <form action="/notes/<%= note.id %>/delete" method="POST" class="dropdown-form" onsubmit="return confirmDelete()">
+                                            <div class="dropdown-menu" id="dropdown-<%= note._id %>">
+                                                <a href="/notes/<%= note._id %>" class="dropdown-item">👁️ View</a>
+                                                <a href="/notes/<%= note._id %>/edit" class="dropdown-item">✏️ Edit</a>
+                                                <form action="/notes/<%= note._id %>/delete" method="POST" class="dropdown-form" onsubmit="return confirmDelete()">
                                                     <button type="submit" class="dropdown-item dropdown-item-danger">🗑️ Delete</button>
                                                 </form>
                                             </div>

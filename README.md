@@ -65,8 +65,8 @@ notes-app/
 │   └── noteController.js       # Business logic and helper functions
 ├── routes/
 │   └── noteRoutes.js           # Express routes
-├── data/
-│   └── notes.json              # Database (JSON file storage)
+├── models/
+│   └── Note.js                 # Mongoose schema for notes
 ├── public/
 │   ├── css/
 │   │   └── style.css           # Styles with glassmorphism UI
@@ -94,8 +94,8 @@ notes-app/
 The application follows the Model-View-Controller (MVC) pattern:
 
 ### Model
-- **Data Storage**: `data/notes.json` serves as the database
-- **Data Structure**: Each note contains id, title, content, category, tags, favorite, pinned, createdAt, updatedAt
+- **Data Storage**: MongoDB Atlas via Mongoose
+- **Data Structure**: Each note contains title, content, category, tags, favorite, pinned, createdAt, updatedAt
 
 ### View
 - **EJS Templates**: Located in `views/` directory
@@ -137,43 +137,34 @@ The application follows the Model-View-Controller (MVC) pattern:
 - **Toggle Favorite**: `POST /notes/:id/favorite`
 - **Toggle Pin**: `POST /notes/:id/pin`
 
-## 💾 How notes.json Works
+## 💾 MongoDB Atlas Storage
 
-The application uses `data/notes.json` as a simple file-based database:
+The application stores notes in MongoDB Atlas using Mongoose:
 
 ### Data Structure
 ```json
-[
-  {
-    "id": 1,
-    "title": "Node.js File System",
-    "content": "fs.readFileSync() reads a file synchronously.",
-    "category": "Node.js",
-    "tags": ["node", "fs", "file-system"],
-    "favorite": true,
-    "pinned": false,
-    "createdAt": "2026-07-10",
-    "updatedAt": "2026-07-10"
-  }
-]
+{
+  "title": "Node.js File System",
+  "content": "Mongoose makes database access simple.",
+  "category": "Node.js",
+  "tags": ["node", "mongoose", "atlas"],
+  "favorite": true,
+  "pinned": false,
+  "createdAt": "2026-07-10",
+  "updatedAt": "2026-07-10"
+}
 ```
 
-### File Operations
-- **Read**: `fs.readFileSync()` - Reads all notes from JSON file
-- **Write**: `fs.writeFileSync()` - Saves notes back to JSON file
-- **Error Handling**: Try-catch blocks handle file read/write errors
-
-### Helper Functions
-- `readNotes()` - Reads and parses notes.json
-- `writeNotes(notes)` - Writes notes array to notes.json
-- `findNote(id)` - Finds a note by ID
-- `generateId()` - Generates unique ID for new notes
+### Database Operations
+- **Create**: `Note.create()` inserts a new note
+- **Read**: `Note.find()` reads notes from MongoDB
+- **Update**: `note.save()` updates an existing note
+- **Delete**: `note.deleteOne()` removes a note
 
 ### Data Persistence
-- All notes are stored in `data/notes.json`
+- All notes are stored in MongoDB Atlas
 - Data persists between server restarts
-- No external database required
-- Easy to backup (just copy the JSON file)
+- No local JSON file is required
 
 ## 🎨 UI Features
 

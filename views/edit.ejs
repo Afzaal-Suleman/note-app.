@@ -14,7 +14,7 @@
                 </div>
             <% } %>
 
-            <form action="/notes/<%= note.id %>/update" method="POST" class="note-form">
+            <form action="/notes/<%= note._id %>/update" method="POST" class="note-form">
                 <div class="form-group">
                     <label for="title">Title *</label>
                     <input 
@@ -81,7 +81,7 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary btn-large">Update Note</button>
-                    <a href="/notes/<%= note.id %>" class="btn-secondary btn-large">Cancel</a>
+                    <a href="/notes/<%= note._id %>" class="btn-secondary btn-large">Cancel</a>
                 </div>
             </form>
         </div>
