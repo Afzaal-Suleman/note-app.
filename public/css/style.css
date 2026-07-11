@@ -695,7 +695,8 @@ html:not(.dark-mode) .moon-icon {
 }
 
 .content-cell {
-    width: 150px;
+    min-width: 250px;
+    max-width: 350px;
     color: var(--text-secondary);
     font-size: 0.85rem;
     line-height: 1.4;
