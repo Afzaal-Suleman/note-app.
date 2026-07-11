@@ -997,22 +997,31 @@ body:not(.dark-mode) .moon-icon {
    Toast Messages
    ============================================ */
 .toast {
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius-md);
-    margin-bottom: 1.5rem;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2000;
+    min-width: 280px;
+    max-width: 360px;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     animation: slideIn 0.3s ease;
+    font-weight: 600;
 }
 
 .toast-success {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid var(--success-color);
-    color: var(--success-color);
+    background: rgba(16, 185, 129, 0.95);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: white;
 }
 
 .toast-error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid var(--danger-color);
-    color: var(--danger-color);
+    background: rgba(239, 68, 68, 0.95);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: white;
 }
 
 @keyframes slideIn {

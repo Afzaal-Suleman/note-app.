@@ -7,3 +7,15 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="<%= typeof darkMode !== 'undefined' && darkMode ? 'dark-mode' : '' %>">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toast = document.querySelector('.toast');
+            if (toast) {
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-10px)';
+                    setTimeout(() => toast.remove(), 250);
+                }, 3200);
+            }
+        });
+    </script>
