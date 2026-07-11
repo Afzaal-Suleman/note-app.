@@ -45,7 +45,10 @@
         <!-- Quick Actions -->
         <div class="quick-actions">
             <a href="/notes" class="btn-primary btn-large">� View All Notes</a>
-            <a href="/notes/create" class="btn-secondary btn-large">➕ Create New Note</a>
+            <% if (req.session && req.session.isAuthenticated) { %>
+                <a href="/notes/create" class="btn-secondary btn-large">➕ Create New Note</a>
+            <% } %>
+
         </div>
 
         <!-- Recent Notes Preview -->
