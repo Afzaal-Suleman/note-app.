@@ -644,7 +644,7 @@ html:not(.dark-mode) .moon-icon {
 }
 
 .title-cell {
-    width: 200px;
+    min-width: 170px;
 }
 
 .note-link {
