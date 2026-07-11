@@ -142,19 +142,19 @@ body {
     transform: scale(1.05);
 }
 
-.dark-mode .sun-icon {
+html.dark-mode .sun-icon {
     display: none;
 }
 
-.dark-mode .moon-icon {
+html.dark-mode .moon-icon {
     display: inline;
 }
 
-body:not(.dark-mode) .sun-icon {
+html:not(.dark-mode) .sun-icon {
     display: inline;
 }
 
-body:not(.dark-mode) .moon-icon {
+html:not(.dark-mode) .moon-icon {
     display: none;
 }
 

@@ -2,19 +2,19 @@
 // Dark Mode Toggle
 // ============================================
 const darkModeToggle = document.getElementById('darkModeToggle');
-const body = document.body;
+const htmlElement = document.documentElement;
 
 // Check for saved dark mode preference
 const savedDarkMode = localStorage.getItem('darkMode');
 if (savedDarkMode === 'true') {
-    body.classList.add('dark-mode');
+    htmlElement.classList.add('dark-mode');
 }
 
 // Toggle dark mode
 if (darkModeToggle) {
     darkModeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', body.classList.contains('dark-mode'));
+        htmlElement.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', htmlElement.classList.contains('dark-mode'));
     });
 }
 
@@ -391,21 +391,21 @@ console.log('%cPress Ctrl/Cmd + K to focus search', 'font-size: 12px; color: #94
 // ============================================
 // Dynamic Category Input
 // ============================================
-const categorySelect = document.getElementById('category');
-const newCategoryInput = document.getElementById('newCategory');
+const categoryFormSelect = document.getElementById('category');
+const newCategoryFormInput = document.getElementById('newCategory');
 
-if (categorySelect && newCategoryInput) {
+if (categoryFormSelect && newCategoryFormInput) {
     // When user selects a category from dropdown
-    categorySelect.addEventListener('change', () => {
-        if (categorySelect.value) {
-            newCategoryInput.value = ''; // Clear custom category input
+    categoryFormSelect.addEventListener('change', () => {
+        if (categoryFormSelect.value) {
+            newCategoryFormInput.value = ''; // Clear custom category input
         }
     });
     
     // When user types in custom category input
-    newCategoryInput.addEventListener('input', () => {
-        if (newCategoryInput.value.trim()) {
-            categorySelect.value = ''; // Clear dropdown selection
+    newCategoryFormInput.addEventListener('input', () => {
+        if (newCategoryFormInput.value.trim()) {
+            categoryFormSelect.value = ''; // Clear dropdown selection
         }
     });
 }
