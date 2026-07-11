@@ -322,6 +322,76 @@ html:not(.dark-mode) .moon-icon {
     margin-bottom: 1rem;
 }
 
+/* ============================================
+   Category List Styles
+   ============================================ */
+.category-list-container {
+    margin-bottom: 1rem;
+    background: var(--bg-glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 0.75rem;
+    box-shadow: var(--glass-shadow);
+}
+
+.category-list {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.25rem;
+}
+
+.category-list::-webkit-scrollbar {
+    height: 6px;
+}
+
+.category-list::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+}
+
+.category-list::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: var(--radius-sm);
+}
+
+.category-list::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+}
+
+.category-item {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: var(--transition);
+    border: var(--glass-border);
+    flex-shrink: 0;
+}
+
+.category-item:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.category-item-active {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-color: transparent;
+}
+
 .table-filter-toggle {
     background: var(--bg-secondary);
     border: var(--glass-border);
@@ -422,6 +492,88 @@ html:not(.dark-mode) .moon-icon {
 }
 
 /* ============================================
+   About Section
+   ============================================ */
+.about-section {
+    margin-top: 2rem;
+    background: var(--bg-glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--glass-shadow);
+}
+
+.about-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.about-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--text-primary);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.about-card {
+    background: var(--bg-secondary);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    text-align: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.about-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.about-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.about-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.about-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.about-footer {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: var(--glass-border);
+    color: var(--text-muted);
+}
+
+.about-footer p {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* ============================================
    Notes Table
    ============================================ */
 .notes-table-container {
@@ -507,7 +659,8 @@ html:not(.dark-mode) .moon-icon {
 }
 
 .category-cell {
-    width: 120px;
+    width: auto;
+    min-width: 140px;
 }
 
 .category-tag {
@@ -542,10 +695,13 @@ html:not(.dark-mode) .moon-icon {
 }
 
 .content-cell {
-    width: 300px;
+    width: 150px;
     color: var(--text-secondary);
-    font-size: 0.65rem;
+    font-size: 0.85rem;
     line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .date-cell {
@@ -1303,6 +1459,49 @@ footer {
     .form-container,
     .note-view-container {
         padding: 1.5rem;
+    }
+    
+    .category-list-container {
+        padding: 0.5rem;
+    }
+    
+    .category-list {
+        gap: 0.25rem;
+        padding: 0.125rem;
+    }
+    
+    .category-item {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    
+    .about-section {
+        padding: 1rem;
+    }
+    
+    .about-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .about-card {
+        padding: 1rem;
+    }
+    
+    .about-icon {
+        font-size: 2rem;
+    }
+    
+    .about-card h3 {
+        font-size: 1rem;
+    }
+    
+    .about-card p {
+        font-size: 0.875rem;
+    }
+    
+    .about-title {
+        font-size: 1.5rem;
     }
 }
 

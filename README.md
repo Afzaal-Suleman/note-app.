@@ -1,6 +1,6 @@
-# 📝 Notes Management Application
+# � KnowledgeVault
 
-A complete, production-quality Notes Management application built with Node.js, Express, EJS, and vanilla JavaScript. Features server-side rendering, MVC architecture, and persistent data storage using JSON files.
+A complete, production-quality KnowledgeFlowApp built with Node.js, Express, EJS, and vanilla JavaScript. Features server-side rendering, MVC architecture, and persistent data storage using MongoDB Atlas. Experience the seamless flow of knowledge.
 
 ## 🚀 Features
 
@@ -321,4 +321,4 @@ Created as a complete, production-quality notes management application demonstra
 
 ---
 
-**Enjoy using the Notes App! 📝✨**
+**Enjoy using KnowledgeVault! �✨**

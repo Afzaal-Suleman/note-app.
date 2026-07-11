@@ -27,6 +27,23 @@
                 </button>
             </div>
 
+            <!-- Category List -->
+            <div class="category-list-container">
+                <div class="category-list" id="categoryList">
+                    <% if (currentSearch) { %>
+                        <span class="category-item category-item-active">All Categories (Search: "<%= currentSearch %>")</span>
+                    <% } else { %>
+                        <% allCategories.forEach((cat, index) => { %>
+                            <a href="/notes?category=<%= encodeURIComponent(cat) %>&search=<%= encodeURIComponent(currentSearch) %>" 
+                               class="category-item <%= currentCategory === cat ? 'category-item-active' : '' %>"
+                               data-category="<%= cat %>">
+                                <%= cat %>
+                            </a>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+
             <% if (notes.length === 0) { %>
                 <div class="empty-state">
                     <div class="empty-icon">📭</div>
@@ -53,15 +70,7 @@
                         <div class="table-filter-controls">
                             <form action="/notes" method="GET" class="filter-form" id="filterForm">
                                 <input type="hidden" name="search" value="<%= currentSearch %>">
-                                
-                                <select name="category" class="filter-select" id="categorySelect">
-                                    <option value="">All Categories</option>
-                                    <% allCategories.forEach(cat => { %>
-                                        <option value="<%= cat %>" <%= currentCategory === cat ? 'selected' : '' %>>
-                                            <%= cat %>
-                                        </option>
-                                    <% }); %>
-                                </select>
+                                <input type="hidden" name="category" value="<%= currentCategory %>">
 
                                 <select name="sort" class="filter-select" id="sortSelect">
                                     <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>Newest</option>
@@ -81,7 +90,9 @@
                                 <th>Status</th>
                                 <th>Title</th>
                                 <th>Category</th>
-                                <th>Tags</th>
+                                <% if (req.session && req.session.isAuthenticated) { %>
+                                    <th>Tags</th>
+                                <% } %>
                                 <th>Content</th>
                                 <th>Created</th>
                                 <th>Actions</th>
@@ -105,19 +116,21 @@
                                         <a href="/notes/<%= note._id %>" class="note-link"><%= note.title %></a>
                                     </td>
                                     <td class="category-cell" data-label="Category">
-                                        <span class="category-tag"><%= note.category %></span>
+                                        <a href="/notes?category=<%= encodeURIComponent(note.category) %>" class="category-tag"><%= note.category %></a>
                                     </td>
-                                    <td class="tags-cell" data-label="Tags">
-                                        <% if (note.tags && note.tags.length > 0) { %>
-                                            <% note.tags.forEach(tag => { %>
-                                                <span class="tag">#<%= tag %></span>
-                                            <% }); %>
-                                        <% } else { %>
-                                            <span class="no-tags">-</span>
-                                        <% } %>
-                                    </td>
+                                    <% if (req.session && req.session.isAuthenticated) { %>
+                                        <td class="tags-cell" data-label="Tags">
+                                            <% if (note.tags && note.tags.length > 0) { %>
+                                                <% note.tags.forEach(tag => { %>
+                                                    <span class="tag">#<%= tag %></span>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <span class="no-tags">-</span>
+                                            <% } %>
+                                        </td>
+                                    <% } %>
                                     <td class="content-cell" data-label="Content">
-                                        <%- note.content.substring(0, 80) %><%= note.content.length > 80 ? '...' : '' %>
+                                        <%- note.content.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '').replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 80) %><%= note.content.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]*>/g, '').replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim().length > 80 ? '...' : '' %>
                                     </td>
                                     <td class="date-cell" data-label="Created">
                                         <%= note.createdAt %>
@@ -169,6 +182,19 @@ document.addEventListener('DOMContentLoaded', () => {
             tableFilterDropdown.classList.remove('show');
         }
     });
+    
+    // Category list auto-scroll to active category
+    const categoryList = document.getElementById('categoryList');
+    const activeCategory = document.querySelector('.category-item-active');
+    
+    if (categoryList && activeCategory) {
+        // Scroll to the active category
+        activeCategory.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+        });
+    }
 });
 
 // Dropdown toggle using event delegation
@@ -227,22 +253,12 @@ function submitSearchForm(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const categorySelect = document.getElementById('categorySelect');
     const sortSelect = document.getElementById('sortSelect');
     
     // Store initial values
-    const initialCategory = categorySelect ? categorySelect.value : '';
     const initialSort = sortSelect ? sortSelect.value : 'newest';
     
-    // Add change event listeners
-    if (categorySelect) {
-        categorySelect.addEventListener('change', () => {
-            if (categorySelect.value !== initialCategory) {
-                submitFilterForm();
-            }
-        });
-    }
-    
+    // Add change event listener for sort
     if (sortSelect) {
         sortSelect.addEventListener('change', () => {
             if (sortSelect.value !== initialSort) {

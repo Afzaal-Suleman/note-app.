@@ -123,21 +123,8 @@ const separatePinned = (notes) => {
 // Controller: Display all notes (Dashboard)
 const getAllNotes = async (req, res) => {
     try {
-        const allNotesList = await Note.find({}).sort({ createdAt: -1 });
-
-        const totalNotes = allNotesList.length;
-        const favorites = allNotesList.filter(note => note.favorite).length;
-        const pinned = allNotesList.filter(note => note.pinned).length;
-        const categories = [...new Set(allNotesList.map(note => note.category))];
-        const recentNotes = sortNotes([...allNotesList], 'newest').slice(0, 5);
-
         res.render('index', {
             title: 'Dashboard',
-            totalNotes,
-            favorites,
-            pinned,
-            categories,
-            recentNotes,
             message: req.query.message,
             messageType: req.query.messageType
         });
@@ -151,23 +138,32 @@ const getAllNotes = async (req, res) => {
 const getNotesList = async (req, res) => {
     try {
         const search = req.query.search || '';
-        const category = req.query.category || '';
+        let category = req.query.category || '';
         const sort = req.query.sort || 'newest';
 
         let notes = await Note.find({});
+        const allCategories = [...new Set((await Note.find({}, 'category')).map(note => note.category))].sort();
 
-        if (search) {
-            notes = filterNotes(notes, search);
+        // Auto-select first category if none is selected and no search - redirect to include category in URL
+        if (!category && !search && allCategories.length > 0) {
+            const params = new URLSearchParams();
+            params.append('category', allCategories[0]);
+            if (sort !== 'newest') params.append('sort', sort);
+            return res.redirect(`/notes?${params.toString()}`);
         }
 
-        if (category) {
+        // When searching, search across all categories (don't filter by category)
+        // When not searching, filter by selected category
+        if (search) {
+            notes = filterNotes(notes, search);
+            // Clear category when searching to show results from all categories
+            category = '';
+        } else if (category) {
             notes = filterByCategory(notes, category);
         }
 
         notes = sortNotes(notes, sort);
         notes = separatePinned(notes);
-
-        const allCategories = [...new Set((await Note.find({}, 'category')).map(note => note.category))];
 
         res.render('notes', {
             title: 'All Notes',

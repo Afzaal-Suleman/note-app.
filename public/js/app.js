@@ -384,7 +384,7 @@ window.addEventListener('afterprint', () => {
 // ============================================
 // Console Welcome Message
 // ============================================
-console.log('%c📝 Notes App', 'font-size: 24px; font-weight: bold; color: #6366f1;');
+console.log('%c� KnowledgeVault', 'font-size: 24px; font-weight: bold; color: #6366f1;');
 console.log('%cBuilt with Node.js, Express, and EJS', 'font-size: 14px; color: #8b5cf6;');
 console.log('%cPress Ctrl/Cmd + K to focus search', 'font-size: 12px; color: #94a3b8;');
 

@@ -10,100 +10,56 @@
             </div>
         <% } %>
 
-        <!-- Dashboard Stats -->
-        <div class="dashboard-stats">
-            <div class="stat-card">
-                <div class="stat-icon">📝</div>
-                <div class="stat-info">
-                    <h3>Total Notes</h3>
-                    <p class="stat-number"><%= totalNotes %></p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⭐</div>
-                <div class="stat-info">
-                    <h3>Favorites</h3>
-                    <p class="stat-number"><%= favorites %></p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📌</div>
-                <div class="stat-info">
-                    <h3>Pinned</h3>
-                    <p class="stat-number"><%= pinned %></p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📂</div>
-                <div class="stat-info">
-                    <h3>Categories</h3>
-                    <p class="stat-number"><%= categories.length %></p>
-                </div>
-            </div>
-        </div>
-
         <!-- Quick Actions -->
         <div class="quick-actions">
-            <a href="/notes" class="btn-primary btn-large">� View All Notes</a>
             <% if (req.session && req.session.isAuthenticated) { %>
-                <a href="/notes/create" class="btn-secondary btn-large">➕ Create New Note</a>
+                <a href="/notes/create" class="btn-primary btn-large">➕ Create New Note</a>
             <% } %>
 
         </div>
 
-        <!-- Recent Notes Preview -->
-        <% if (recentNotes && recentNotes.length > 0) { %>
-            <div class="recent-notes-section">
-                <h2 class="section-title">Recent Notes</h2>
-                <div class="notes-table-container">
-                    <table class="notes-table">
-                        <thead>
-                            <tr>
-                                <th>Status</th>
-                                <th>Title</th>
-                                <th>Category</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% recentNotes.slice(0, 5).forEach(note => { %>
-                                <tr class="<%= note.pinned ? 'pinned-row' : '' %> <%= note.favorite ? 'favorite-row' : '' %>">
-                                    <td class="status-cell">
-                                        <% if (note.pinned) { %>
-                                            <span class="status-icon" title="Pinned">📌</span>
-                                        <% } %>
-                                        <% if (note.favorite) { %>
-                                            <span class="status-icon" title="Favorite">⭐</span>
-                                        <% } %>
-                                        <% if (!note.pinned && !note.favorite) { %>
-                                            <span class="status-icon">-</span>
-                                        <% } %>
-                                    </td>
-                                    <td class="title-cell">
-                                        <a href="/notes/<%= note._id %>" class="note-link"><%= note.title %></a>
-                                    </td>
-                                    <td class="category-cell">
-                                        <span class="category-tag"><%= note.category %></span>
-                                    </td>
-                                    <td class="date-cell">
-                                        <%= note.createdAt %>
-                                    </td>
-                                    <td class="actions-cell">
-                                        <div class="table-actions">
-                                            <a href="/notes/<%= note._id %>" class="btn-view" title="View">👁️</a>
-                                            <% if (req.session && req.session.isAuthenticated) { %>
-                                                <a href="/notes/<%= note._id %>/edit" class="btn-edit" title="Edit">✏️</a>
-                                            <% } %>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
+        <!-- About Section -->
+        <div class="about-section">
+            <div class="about-content">
+                <h2 class="about-title">About KnowledgeFlowApp</h2>
+                <div class="about-grid">
+                    <div class="about-card">
+                        <div class="about-icon">🌊</div>
+                        <h3>Seamless Flow</h3>
+                        <p>Experience a smooth flow of knowledge. Navigate through content effortlessly with our intuitive interface designed for continuous learning.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-icon">📂</div>
+                        <h3>Organized Categories</h3>
+                        <p>Browse knowledge by categories to quickly find the information you need. Flow through topics effortlessly.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-icon">🔍</div>
+                        <h3>Powerful Search</h3>
+                        <p>Search across all knowledge by title, content, category, or tags. Find any information in seconds and keep the flow going.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-icon">⭐</div>
+                        <h3>Quick Access</h3>
+                        <p>Favorite important knowledge for quick access. Your most important information flows directly to your fingertips.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-icon">🏷️</div>
+                        <h3>Smart Tags</h3>
+                        <p>Knowledge can have tags like #important, #work, #personal. Click on any tag to see all related content with that label.</p>
+                    </div>
+                    <div class="about-card">
+                        <div class="about-icon">🔒</div>
+                        <h3>Secure Access</h3>
+                        <p>Your knowledge is securely stored with authentication. Access your personal reading material safely and keep the flow secure.</p>
+                    </div>
+                </div>
+                <div class="about-footer">
+                    <p>Built with ❤️ using Node.js, Express, MongoDB, and EJS</p>
+                    <p>Version 1.0.0</p>
                 </div>
             </div>
-        <% } %>
+        </div>
     </div>
 </main>
 
